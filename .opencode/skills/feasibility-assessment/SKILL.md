@@ -1,9 +1,9 @@
 ---
 name: feasibility-assessment
-description: Load for Day 4 to compare one or more PoC realization models against a technology-independent SysML v2 concept, its feasibility criteria, sourced specifications, and observed test evidence.
+description: Load during the PoC Stage to compare one or more realization models against a technology-independent SysML v2 concept, its feasibility criteria, sourced specifications, and observed test evidence.
 ---
 
-# Feasibility assessment (Day 4)
+# PoC Stage: feasibility assessment
 
 Follow [the assess-and-refine workflow](references/feasibility-assessment.md). Compare relevant concept elements and criteria with each realization. Mark status as `satisfied`, `partially satisfied`, `unsatisfied`, or `unverified`; record evidence level separately as `tested`, `specification-supported`, `inferred`, or `unsupported` and link to actual results or sources.
 

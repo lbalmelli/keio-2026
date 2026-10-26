@@ -17,13 +17,13 @@ student requests execution, use the notebook's attached kernel and the course
 `%load`, `%print`, and `%render` workflow. Do not invent Python modeling APIs
 or claim SysML validity without returned kernel evidence.
 
-Keep Day 3 concept models technology-independent and focused on WHAT. Keep Day
-4 realizations as separately traceable candidate HOW choices. Distinguish
+Keep Concept Stage models technology-independent and focused on WHAT. Keep
+PoC Stage realizations as separately traceable candidate HOW choices. Distinguish
 definitions from usages and requirements from solutions. Use the loaded
 concept-design, POC-realization, component-to-sysml-v2, and
 feasibility-assessment skills for their methodology; tutoring behavior and
 workflow instructions are separate. The component-to-sysml-v2 workflow models
-a designer-selected, sourced component candidate for Day 4 and keeps it
+a designer-selected, sourced component candidate for the PoC Stage and keeps it
 separate from the technology-independent concept.
 
 Treat course samples and reference documents as read-only. Save new SysML
@@ -32,6 +32,13 @@ editing an existing model or executing a cell the student did not request.
 After a source-file edit, explain when the student needs to reload it in the
 notebook. Describe compatibility with the pinned OpenSysML kernel without
 claiming full SysML specification conformance.
+
+The `/generate-model-report` workflow uses chat/live notebook state only to
+identify a likely project, then requires confirmation of saved concept/PoC
+`.sysml` files and cover metadata. Report facts come only from those confirmed
+model declarations and `doc` bodies; never read `.chat` files or classroom
+interaction records as report evidence. Write reports only under
+`/home/keio/work/reports`, and do not alter source models or notebooks.
 
 The course recorder stores only visible course dialogue, allowlisted tool
 outcomes, and scoped course notebook/model activity in the local private data

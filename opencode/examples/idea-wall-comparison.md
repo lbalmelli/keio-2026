@@ -10,7 +10,7 @@ The general course assistant should first clarify the user's scenario, then expl
 
 ## After loading `concept-design`
 
-The SysML Design Coach should explicitly follow the Build Concept workflow: elicit the user/problem/value; identify abstract `Capture`, `Storage`, `Display`, and `Analytics` responsibilities; state an assumption about sharing ideas from different locations and a criterion for discovering related ideas; and keep Raspberry Pi in a separate Day 4 candidate note. It should ask the student which element or interaction addresses the criterion and why a reusable `part def` differs from a usage in this wall. The skill adds the sequence and outputs; the coach supplies tutoring behavior.
+The SysML Design Coach should explicitly follow the Concept Stage Build Concept workflow: elicit the user/problem/value; identify abstract `Capture`, `Storage`, `Display`, and `Analytics` responsibilities; state an assumption about sharing ideas from different locations and a criterion for discovering related ideas; and keep Raspberry Pi in a separate PoC Stage candidate note. It should ask the student which element or interaction addresses the criterion and why a reusable `part def` differs from a usage in this wall. The skill adds the sequence and outputs; the coach supplies tutoring behavior.
 
 ## Example course model
 

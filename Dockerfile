@@ -29,6 +29,7 @@ COPY .opencode /opt/course/.opencode
 RUN touch /opt/course/.opencode/.gitignore
 COPY docs/classroom-data-and-privacy.md /opt/course/docs/classroom-data-and-privacy.md
 COPY docs/first_model.md /opt/course/docs/first_model.md
+COPY docs/keio-logo.png /opt/course/docs/keio-logo.png
 COPY config/jupyter/keio_course_evidence.json /opt/conda/etc/jupyter/jupyter_server_config.d/keio_course_evidence.json
 ENV PYTHONPATH=/opt/course
 

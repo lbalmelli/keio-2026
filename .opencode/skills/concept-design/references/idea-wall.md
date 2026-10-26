@@ -30,4 +30,4 @@ package IdeaWallViews {
 
 For a disposable kernel check, enter the model and view declarations in cells, then run `%render IdeaWallViews::completeConcept mermaid`. A `part def Capture;` defines a reusable type; `part capture : Capture;` is a usage in the `ideaWall` configuration.
 
-Possible assumptions: participants contribute from different locations; related ideas can be found. Ask the student what observable criterion tests each assumption and which responsibility addresses it. Keep concrete parts and services in a separate Day 4 realization note.
+Possible assumptions: participants contribute from different locations; related ideas can be found. Ask the student what observable criterion tests each assumption and which responsibility addresses it. Keep concrete parts and services in a separate PoC Stage realization note.

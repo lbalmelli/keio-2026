@@ -1,9 +1,9 @@
 ---
 name: poc-realization
-description: Load for Day 4 when mapping a versioned, technology-independent SysML v2 concept and its criteria to sourced hardware, software, service, and assembly candidates for a proof of concept.
+description: Load for the PoC Stage when mapping a versioned, technology-independent SysML v2 concept and its criteria to sourced hardware, software, service, and assembly candidates for a proof of concept.
 ---
 
-# PoC realization (Day 4)
+# PoC Stage
 
 Follow [the course realization workflow](references/poc-realization.md). Read the concept and its minimum specifications without silently changing them. Map each logical element to capabilities, interfaces, attributes, constraints, and criteria. Propose at least two credible alternatives when choices exist, with integration points, risks, missing items, and a preliminary bill of materials.
 

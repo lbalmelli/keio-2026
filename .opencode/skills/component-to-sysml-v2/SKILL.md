@@ -1,11 +1,11 @@
 ---
 name: component-to-sysml-v2
-description: Load on Day 4 to turn a designer-selected, sourced hardware or software component into a traceable SysML v2 part definition for a PoC realization.
+description: Load during the PoC Stage to turn a designer-selected, sourced hardware or software component into a traceable SysML v2 part definition for a proof-of-concept realization.
 ---
 
 # Component specification to SysML v2
 
-Use this workflow after a designer has selected a concrete component candidate from an online specification. The goal is a reusable `part def` for a separately modeled Day 4 PoC realization, not a change to the technology-independent Day 3 concept.
+Use this workflow after a designer has selected a concrete component candidate from an online specification. The goal is a reusable `part def` for a separately modeled PoC Stage realization, not a change to the technology-independent Concept Stage model.
 
 1. Confirm the selected component's identity and the source page or document. Record the supplier/project, exact model or version, direct source URL, and retrieval date. If the page is unavailable or does not identify the selected variant, state the limitation and ask the designer how to proceed.
 2. Read the specification for characteristics that may affect integration with other components. Consider only categories relevant to this candidate, such as ports and connection types, protocols, power, physical dimensions, mass, operating limits, and required dependencies. For each candidate characteristic, capture the documented value, unit, conditions or caveats, and source location. Mark interpretations and derived values separately; never fill gaps with guesses.
