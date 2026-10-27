@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 5, 20/10/26
+      vers 7, 27/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./docs/keio-logo.png" alt="Keio University" width="140">
@@ -29,7 +29,6 @@ The entire `classes/` directory is included in this repository. Start with the [
 | JupyterLab | The browser interface for notebooks and the native Jupyter AI chat panel. |
 | OpenSysML Jupyter kernel | Execute SysML v2 cells using `%load`, `%print`, and `%render`. |
 | OpenCode through Jupyter AI | Chat with the SysML Design Coach using your selected provider and model. |
-| Course status item | Show local recording and synchronization status when classroom collection is configured. |
 
 The container installs pinned course versions of Jupyter AI, OpenSysML, and OpenCode. You do not need to install Python on your computer.
 
@@ -132,7 +131,7 @@ JupyterLab is the only browser application. Open the native Jupyter AI chat pane
 make opencode-auth
 ```
 
-Follow your provider's sign-in prompts, then choose an authenticated provider and model in Jupyter AI. Never enter provider credentials in a notebook or chat.
+Follow the prompts to connect OpenCode Zen, then choose an available Zen model in Jupyter AI. Never enter provider credentials in a notebook or chat.
 
 ## Load the sample model
 
@@ -151,9 +150,9 @@ Open the notebook in JupyterLab and select the **SysML v2 (OpenSysML)** kernel. 
 - New notebooks go in `workspace/notebooks/`.
 - Save new SysML models in `workspace/models/` with distinct filenames.
 - OpenCode provider configuration is stored in the persistent `opencode-state` Docker volume.
-- Student-created chats, notebooks, models, and course evidence are local workspace data and are excluded from the public course repository by Git ignore rules. The starter notebook is distributed with the course. Do not force-add student work to Git.
+- Student-created chats, notebooks, and models are local workspace data and are excluded from the public course repository by Git ignore rules. The starter notebook is distributed with the course. Do not force-add student work to Git.
 
-The course status item may record visible course dialogue and scoped notebook/model activity locally in `workspace/private-course-data/`. In a fresh checkout, no instructor collector is configured, so there is no remote synchronization. If your instructor enables collection, enroll through the status item using the one-time code they provide. Read [Classroom Data and Privacy](docs/classroom-data-and-privacy.md) before using the environment for course evidence.
+Jupyter AI saves the full student and agent conversation in `.chat` files at the workspace root. These files are the transcript source for interaction analysis. They can contain private prompts and responses; do not share them without the student's consent. See [Chat Transcripts and Privacy](docs/classroom-data-and-privacy.md).
 
 ## Stop and restart
 
@@ -179,11 +178,11 @@ In both guides, commands beginning with `make`, `docker`, or `git` are run in th
 
 ## Use the SysML Design Coach and skills
 
-Open the native **Chat** panel in JupyterLab, select **SysML Design Coach**, and authenticate with `make opencode-auth` if you have not already. Choose an authenticated provider and model in Jupyter AI. Start the Day 3 concept workflow with `/start-concept-design`; use `/explore-poc` for Day 4 candidate realizations, `/component-to-sysml-v2` to model a selected component specification as a sourced `part def`, and `/assess-feasibility` to compare evidence. The component workflow reviews interface-relevant properties such as ports, connections, dimensions, and mass with you, then models the properties you select. These entry points load the matching course skill.
+Open the native **Chat** panel in JupyterLab, select **SysML Design Coach**, and authenticate with `make opencode-auth` if you have not already. Connect OpenCode Zen and choose an available Zen model in Jupyter AI. Start the Day 3 concept workflow with `/start-concept-design`; use `/explore-poc` for Day 4 candidate realizations, `/component-to-sysml-v2` to model a selected component specification as a sourced `part def`, and `/assess-feasibility` to compare evidence. The component workflow reviews interface-relevant properties such as ports, connections, dimensions, and mass with you, then models the properties you select. These entry points load the matching course skill.
 
 The coach provides the personalized tutoring role: it asks relevant open questions, offers graduated hints, and asks occasional comprehension questions. You make and explain the design decisions; the coach preserves your answers and does not assign automatic grades or mastery scores. The skills provide the step-by-step methodology. On Day 3, keep the concept technology-independent and describe **what** the product must do. On Day 4, model candidate **how** realizations separately and trace them back to the concept and its criteria. See [Visual Concept Making workflows](docs/visual-concept-making-workflows.md) for the full workflow.
 
-The JupyterLab status item shows `Recording`, `Synced`, `Offline / queued`, or `Attention needed`. Click it to read the disclosure, enroll with a one-time code from the instructor, synchronize, or export local evidence. Course dialogue and scoped notebook/model activity are stored in the private, Git-ignored `workspace/private-course-data/` folder. A fresh checkout has no collector URL configured, so it records locally and does not submit data remotely. Offline evidence remains queued. Read [Classroom Data and Privacy](docs/classroom-data-and-privacy.md) before using the workspace for course evidence.
+To inspect a saved transcript, run `./scripts/get-workspace-inventory.py --chat <chat-name>` from the repository root. Student messages are displayed in full and agent messages as one-line previews; the `.chat` file retains the complete conversation.
 
 ## Common problems
 
@@ -193,10 +192,10 @@ The JupyterLab status item shows `Recording`, `Synced`, `Offline / queued`, or `
 | `docker compose` is unavailable | Install the Docker Compose v2 plugin and check `docker compose version`. |
 | Port `8888` is already in use | Set `JUPYTER_PORT=8889`, run `make up`, and open `http://localhost:8889/lab`. |
 | OpenCode is missing from the chat agent list | Run `make build`, then restart with `make down` and `make up`. |
-| OpenCode has no response | Run `make opencode-auth` and select an authenticated provider and model in Jupyter AI. |
+| OpenCode has no response | Run `make opencode-auth`, connect OpenCode Zen, and select an available Zen model in Jupyter AI. |
 | OpenSysML kernel is missing | Run `make build`, then restart the container. Select **SysML v2 (OpenSysML)** from the notebook's Kernel menu. |
 | Course sample cannot be found | Run `make samples`, then restart with `make down` and `make up`. |
 | Jupyter rejects the token | Use `opensysml` unless you set `JUPYTER_TOKEN` before startup. |
 | A saved model or notebook is missing after rebuild | Check `workspace/models/` and `workspace/notebooks/` on your computer; these folders persist outside the container. |
 
-For notebook and tutor instructions, see the course guides above. For collection and privacy questions, contact your instructor.
+For notebook and tutor instructions, see the course guides above. Treat `.chat` transcripts as private student work.

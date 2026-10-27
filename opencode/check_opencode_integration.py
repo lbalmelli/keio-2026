@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check the installed course tutor, Jupyter AI, extensions, and kernel."""
+"""Check the installed course tutor, Jupyter, and kernel."""
 
 from __future__ import annotations
 
@@ -45,13 +45,6 @@ def main() -> int:
         failures.append("OpenSysML (sysml) Jupyter kernel is not installed")
     else:
         print("OpenSysML kernel: installed")
-
-    result = subprocess.run([sys.executable, "-m", "jupyter", "labextension", "list"], capture_output=True, text=True, check=False)
-    output = result.stdout + result.stderr
-    if result.returncode or "@keio/classroom-status" not in output or "enabled" not in output:
-        failures.append("Keio classroom status extension is missing or disabled")
-    else:
-        print("Course status extension: enabled")
 
     if failures:
         for failure in failures:

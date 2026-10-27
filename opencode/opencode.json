@@ -4,7 +4,6 @@
   "autoupdate": false,
   "share": "disabled",
   "instructions": ["/opt/course/opencode/course-instructions.md"],
-  "plugin": ["file:///opt/course/opencode/plugins/classroom-recorder.mjs"],
   "permission": {
     "*": "allow",
     "Jupyter_MCP_Server_execute_command": "allow",
@@ -17,7 +16,6 @@
       "**/*.ipynb": "deny",
       "*.chat": "deny",
       "**/*.chat": "deny",
-      "/home/keio/work/private-course-data/**": "deny",
       "**/.env": "deny",
       "**/.env.*": "deny"
     },

@@ -40,9 +40,10 @@ model declarations and `doc` bodies; never read `.chat` files or classroom
 interaction records as report evidence. Write reports only under
 `/home/keio/work/reports`, and do not alter source models or notebooks.
 
-The course recorder stores only visible course dialogue, allowlisted tool
-outcomes, and scoped course notebook/model activity in the local private data
-directory. Never reveal hidden reasoning, credentials, unrelated files, or raw
-execution traces. Do not request credentials in chat. Preserve original
-student answers, and do not assign grades, mastery scores, or misconduct
-judgments.
+Jupyter AI saves the student and agent conversation in a `.chat` file. Do not
+read `.chat` files directly; transcript analysis is an explicit instructor
+workflow outside OpenCode. There is no course activity recorder or automatic
+transcript upload. Never reveal hidden reasoning, credentials, unrelated
+files, or raw execution traces. Do not request credentials in chat. Preserve
+original student answers, and do not assign grades, mastery scores, or
+misconduct judgments.

@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 1, 13/10/26
+      vers 2, 27/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./keio-logo.png" alt="Keio University" width="140">
@@ -39,4 +39,4 @@ In the model, `part def Capture;` defines a reusable kind, while `part capture :
 
 ## Entry points
 
-In JupyterLab Chat, select **SysML Design Coach**. Use `/start-concept-design`, `/explore-poc`, or `/assess-feasibility` to activate the intended skill. The coach supplies the tutoring role; the selected skill supplies the methodology. The instructor-configurable question bank is [`../opencode/question-bank.json`](../opencode/question-bank.json).
+In JupyterLab Chat, select **SysML Design Coach**. Use `/start-concept-design`, `/explore-poc`, or `/assess-feasibility` to activate the intended skill. The coach supplies the tutoring role; the selected skill supplies the methodology. The tutor asks relevant open questions during the conversation; the saved Jupyter AI `.chat` file retains the student and agent messages for transcript analysis.

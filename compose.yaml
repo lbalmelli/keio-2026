@@ -4,7 +4,7 @@ services:
       context: .
       args:
         OPENSYSML_KERNEL_VERSION: "0.9.3.dev20261008"
-        OPENCODE_VERSION: "1.19.0"
+        OPENCODE_VERSION: "1.19.4"
     user: root
     working_dir: /home/keio/work
     command:
@@ -23,13 +23,6 @@ services:
       XDG_STATE_HOME: /home/keio/state/state
       OPENCODE_CONFIG: /opt/course/opencode/opencode.json
       OPENCODE_DISABLE_AUTOUPDATE: "true"
-      COURSE_DATA_DIR: /home/keio/work/private-course-data
-      COURSE_COLLECTOR_URL: "${COURSE_COLLECTOR_URL:-}"
-      COURSE_COLLECTOR_ALLOW_HTTP: "${COURSE_COLLECTOR_ALLOW_HTTP:-0}"
-      COURSE_SYNC_INTERVAL: "${COURSE_SYNC_INTERVAL:-120}"
-      COURSE_SYNC_TIMEOUT: "${COURSE_SYNC_TIMEOUT:-8}"
-      COURSE_SYNC_BATCH_SIZE: "${COURSE_SYNC_BATCH_SIZE:-50}"
-      COURSE_FILE_SCAN_INTERVAL: "${COURSE_FILE_SCAN_INTERVAL:-12}"
     ports:
       - "127.0.0.1:${JUPYTER_PORT:-8888}:8888"
     volumes:

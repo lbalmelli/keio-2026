@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 16, 25/10/26
+      vers 18, 27/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./keio-logo.png" alt="Keio University" width="140">
@@ -35,14 +35,14 @@ Open a second terminal in the repository and run:
 make opencode-auth
 ```
 
-Follow OpenCode's interactive provider login instructions. For providers that accept API keys, use the prompt in the CLI and do not paste a key into a notebook, model, chat, or source file. Authentication state is kept in the `opencode-state` Docker volume. To use an authenticated provider, select its available model in Jupyter AI's chat controls. Provider names and free-tier availability depend on the pinned OpenCode version and provider.
+Connect **OpenCode Zen** in the interactive login and enter its API key at the CLI prompt. Do not paste a key into a notebook, model, chat, or source file. Authentication state is kept in the `opencode-state` Docker volume. Select an available OpenCode Zen model in Jupyter AI's chat controls. Provider names and free-tier availability depend on the pinned OpenCode version and provider.
 
 ## 2. Open and place Chat
 
 1. Open or create a notebook in JupyterLab.
 2. Click the **Chat** icon in JupyterLab's left sidebar and choose **New Chat**.
 3. Right-click the Chat icon and choose **Switch Sidebar Side** to move it right. Drag the panel divider to resize it; JupyterLab saves its workspace layout.
-4. In the chat toolbar, select **OpenCode** as the persona and choose the authenticated provider/model.
+4. In the chat toolbar, select **OpenCode** as the persona and choose an available OpenCode Zen model.
 
 The default Jupyter MCP tools are included by Jupyter AI. The course does not configure a second MCP server. The agent can inspect the active notebook and selected cell, read current live cell contents, add or edit cells, run cells, and inspect results through the notebook's attached kernel. Live unsaved changes are available only while that notebook is open in the browser.
 
@@ -68,13 +68,9 @@ The generated Markdown is saved to `/home/keio/work/reports/<project-slug>.md`, 
 
 For example, a confirmed concept source with no confirmed realization produces a partial report with Concept requirements/structure/behavior coverage explicitly stated and Part II marked not yet modeled. If two realization files are confirmed, the report gives each a separate PoC section and traces only relationships declared in the model. A rendered view appears only after its real qualified view name has been loaded and `%render` returned output in the attached kernel.
 
-The question bank in `opencode/question-bank.json` is configuration an instructor can edit without changing the recorder or agent implementation. Sample questions cover definitions/usages, criteria, logical structure, behavior, minimum specification, concept/implementation boundaries, and PoC evidence. The recorder links a visible coach question to the next student message when possible and labels inferred associations. It preserves the student's original words and does not score answers.
+## 4. Review saved chat transcripts
 
-## 4. Check recording and synchronization
-
-The JupyterLab status bar shows `Recording`, `Synced`, `Offline / queued`, or `Attention needed`. Click it to read the disclosure, enroll with a one-time code from the instructor, use **Sync now**, or export local JSONL evidence. In a fresh checkout, no collector URL is set and no external submission occurs; course evidence is kept locally in the Git-ignored, host-backed `workspace/private-course-data/`. If the collector is unreachable, continue modeling; pending evidence remains queued and retries run in the background. Read [Classroom Data and Privacy](classroom-data-and-privacy.md) before collecting real student work.
-
-The recorder captures visible OpenCode messages and allowlisted tool outcomes, selected notebook cell changes/executions and saved notebook metadata, and checkpoints only for course `.sysml` models. It excludes hidden reasoning, credentials, unrelated files, and general computer activity. It cannot prove that a student-controlled laptop submitted every interaction.
+Jupyter AI stores the full student and agent conversation in `.chat` files at the workspace root. These files are the transcript source for interaction analysis. The course does not create a second JSONL transcript, record notebook/model activity, or upload chat data to an instructor collector. Run `./scripts/get-workspace-inventory.py --chat <chat-name>` from the repository root to display student messages in full and one-line previews of agent messages. The preview does not alter the `.chat` file, which retains the full conversation. Treat chat files as private student work and do not share them without consent.
 
 ## 5. Try the Keio course workflow
 
@@ -100,7 +96,7 @@ Review any cell change and output in the notebook. The course OpenCode config au
 
 Create new `.sysml` files in `workspace/models/` with distinct names. The folder appears as `models/` in Jupyter's file browser and is available at `/home/keio/work/models` for model loading. Copy reference models from `samples/` into `models/` before editing. The course OpenCode config allows `pwd` and `ls` without approval, and allows reading reference samples, saved model files, and `/opt/course/docs/`. Direct reads of `.ipynb`, `.chat`, and private course data remain blocked so the coach uses live notebook MCP context. Generic file edits and shell commands other than `pwd`/`ls` still ask; direct `.ipynb` file edits are denied. The **Always allow** choice in a prompt lasts only for the current OpenCode session; these config rules persist across container restarts. OpenCode merges config sources, so project or inline config can override these defaults. They are not an enforced security boundary.
 
-Reference samples at `/home/keio/work/samples` are read-only. Jupyter notebooks, models, chats, and the local course evidence directory are inside the host-backed `workspace/` directory mounted at `/home/keio/work`. Do not edit reference examples in place. JupyterLab uses its normal notebook autosave interval, so a live MCP edit can be saved through the existing autosave behavior. After editing a `.sysml` file, load it again in a SysML notebook when needed:
+Reference samples at `/home/keio/work/samples` are read-only. Jupyter notebooks, models, and chats are inside the host-backed `workspace/` directory mounted at `/home/keio/work`. Do not edit reference examples in place. JupyterLab uses its normal notebook autosave interval, so a live MCP edit can be saved through the existing autosave behavior. After editing a `.sysml` file, load it again in a SysML notebook when needed:
 
 ```text
 %load /home/keio/work/models/my_model.sysml
@@ -125,15 +121,13 @@ make logs
 | Symptom | Check |
 | --- | --- |
 | OpenCode is absent from the persona picker | Run `make doctor`, then rebuild with `make build` and restart with `make down` followed by `make up`. |
-| OpenCode responds that no provider/model is configured | Run `make opencode-auth`, then choose an authenticated provider and model in Chat. |
+| OpenCode responds that no provider/model is configured | Run `make opencode-auth`, connect OpenCode Zen, then choose an available Zen model in Chat. |
 | Notebook tools cannot identify a notebook | Keep the target notebook open in JupyterLab and select its tab and a cell. The agent reads browser-live state rather than stale `.ipynb` disk contents. |
 | `%render` reports a missing view | Use the SysML v2 (OpenSysML) kernel and execute the model, view declaration, and `%load` prerequisite cells first. `%render` targets a declared view, not a package. |
 | Credentials disappear after restart | Keep the named `opencode-state` volume; do not run `docker compose down --volumes`. |
 | Jupyter MCP tool still asks for approval | The course config auto-allows only `Jupyter_MCP_Server_execute_command`. Rebuild and restart after updating the image; other tools may still prompt. |
 | A clean start repeatedly logs `GET /mcpapi` with `404 Not Found` | The bundled Jupyter MCP server exposes `/mcp`; `/mcpapi` is an endpoint mismatch in the client/runtime path. | Run `make doctor` to check the bundled MCP tool registry. If it succeeds but `/mcpapi` polling continues when OpenCode starts, share the logs with the instructor; do not add another Jupyter MCP server. |
 | Logs show `404` and `Kernel does not exist` after restarting Jupyter | The browser is trying to reconnect to a kernel ID from the previous container. | Save notebook edits, reload JupyterLab, select **SysML v2 (OpenSysML)** from the notebook's **Kernel** menu if needed, then rerun the required cells to restore the in-memory model. |
-| Course status shows `Offline / queued` | No endpoint/enrollment is configured, or the network is unavailable. | Check the status details and use **Sync now** when connected. Ask the instructor for an enrollment code if the course collector is enabled. |
-| Course status shows `Attention needed` | Enrollment expired/revoked or the collector rejected an upload. | Ask the instructor for a new one-time code. Queued local data remains available. |
 | SysML Design Coach or workflow command is absent | Image or OpenCode config is stale. | Run `make build`, then `make down` and `make up`. Run `make doctor` to inspect the installed runtime. |
 
 Stop the environment with `make down`. Restart it with `make up`. Do not use `docker compose down --volumes` if you want to retain OpenCode authentication state.

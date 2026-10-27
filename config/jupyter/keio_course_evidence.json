@@ -1,7 +1,0 @@
-{
-  "ServerApp": {
-    "jpserver_extensions": {
-      "course_evidence.server_extension": true
-    }
-  }
-}

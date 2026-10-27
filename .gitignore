@@ -52,11 +52,10 @@ workspace/samples/*
 !workspace/models/
 workspace/models/*
 !workspace/models/.gitkeep
-# Student evidence, identities, enrollment tokens, and instructor collector data
+# Legacy private recorder data; keep ignored so old local files are never published.
 workspace/private-course-data/
 .env
 .local/
-labextension/_build/
 __pycache__/
 
 # Jupyter-generated checkpoints
