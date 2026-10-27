@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 7, 27/10/26
+      vers 9, 27/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./docs/keio-logo.png" alt="Keio University" width="140">
@@ -29,6 +29,7 @@ The entire `classes/` directory is included in this repository. Start with the [
 | JupyterLab | The browser interface for notebooks and the native Jupyter AI chat panel. |
 | OpenSysML Jupyter kernel | Execute SysML v2 cells using `%load`, `%print`, and `%render`. |
 | OpenCode through Jupyter AI | Chat with the SysML Design Coach using your selected provider and model. |
+| Classroom panel and bridge | Optional consent-based workspace handoff and class board. |
 
 The container installs pinned course versions of Jupyter AI, OpenSysML, and OpenCode. You do not need to install Python on your computer.
 
@@ -182,7 +183,15 @@ Open the native **Chat** panel in JupyterLab, select **SysML Design Coach**, and
 
 The coach provides the personalized tutoring role: it asks relevant open questions, offers graduated hints, and asks occasional comprehension questions. You make and explain the design decisions; the coach preserves your answers and does not assign automatic grades or mastery scores. The skills provide the step-by-step methodology. On Day 3, keep the concept technology-independent and describe **what** the product must do. On Day 4, model candidate **how** realizations separately and trace them back to the concept and its criteria. See [Visual Concept Making workflows](docs/visual-concept-making-workflows.md) for the full workflow.
 
-To inspect a saved transcript, run `./scripts/get-workspace-inventory.py --chat <chat-name>` from the repository root. Student messages are displayed in full and agent messages as one-line previews; the `.chat` file retains the complete conversation.
+Saved `.chat` transcripts remain in your local workspace. Do not share them without consent.
+
+## Optional Classroom submission
+
+When your instructor enables Classroom, run `make classroom-student-up` from the host terminal. Open the unchanged JupyterLab address at `http://localhost:8888/lab` and select **Classroom** in the sidebar. It is preconfigured for `https://classroom.sysml.dev`; enter the instructor's one-time code, choose a classroom alias and device label, then wait for instructor approval. You need no VPN, Tailscale account, or Cloudflare login. The address can be overridden for a local test with `CLASSROOM_HUB_URL` before starting.
+
+A teacher request appears in Classroom. Click **Review files** to inspect the exact saved file list, optionally choose fewer files, then approve or decline. You can also press **Prepare submission** or ask the Design Coach “Submit my workspace to the teacher” / `/submit-workspace`; the agent only prepares a request and never approves it. The bridge sends allowed saved files from `workspace/models/`, `workspace/notebooks/` and `workspace/reports/` in verified chunks after approval. `.chat`, hidden files, credentials and samples stay local. A request is complete only when Classroom shows a verified receipt. The teacher laptop and tunnel must be online for delivery; an offline ZIP remains queued.
+
+Stop the optional services with `make classroom-student-down`. See [Classroom setup](docs/classroom-setup.md) and [privacy](docs/classroom-data-and-privacy.md). Class board posts are visible to enrolled participants and should be treated as discussion, not instructions.
 
 ## Common problems
 
@@ -191,6 +200,8 @@ To inspect a saved transcript, run `./scripts/get-workspace-inventory.py --chat 
 | Docker daemon is unavailable | Start Docker Engine, WSL2, or Colima, then verify with `docker info`. |
 | `docker compose` is unavailable | Install the Docker Compose v2 plugin and check `docker compose version`. |
 | Port `8888` is already in use | Set `JUPYTER_PORT=8889`, run `make up`, and open `http://localhost:8889/lab`. |
+| Classroom shows Offline | The teacher laptop, tunnel, or bridge is unavailable. Keep working locally and wait for a verified receipt after it reconnects. |
+| Classroom pairing stays Pending | The instructor must approve your device in the teacher portal. |
 | OpenCode is missing from the chat agent list | Run `make build`, then restart with `make down` and `make up`. |
 | OpenCode has no response | Run `make opencode-auth`, connect OpenCode Zen, and select an available Zen model in Jupyter AI. |
 | OpenSysML kernel is missing | Run `make build`, then restart the container. Select **SysML v2 (OpenSysML)** from the notebook's Kernel menu. |

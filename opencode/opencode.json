@@ -3,7 +3,9 @@
   "default_agent": "sysml-design-coach",
   "autoupdate": false,
   "share": "disabled",
-  "instructions": ["/opt/course/opencode/course-instructions.md"],
+  "instructions": [
+    "/opt/course/opencode/course-instructions.md"
+  ],
   "permission": {
     "*": "allow",
     "Jupyter_MCP_Server_execute_command": "allow",
@@ -58,6 +60,17 @@
       "description": "Personalized SysML v2 design tutor for concept design, PoC realization, and feasibility learning",
       "mode": "primary",
       "prompt": "{file:/opt/course/.opencode/agents/sysml-design-coach.md}"
+    }
+  },
+  "mcp": {
+    "classroom_student": {
+      "type": "local",
+      "command": [
+        "python",
+        "-m",
+        "classroom.mcp_student"
+      ],
+      "enabled": true
     }
   }
 }

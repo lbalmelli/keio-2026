@@ -8,3 +8,7 @@ notebooks
 labextension/node_modules
 labextension/_build
 **/__pycache__
+.local
+classroom/jupyterlab/node_modules
+classroom/jupyterlab/lib
+classroom/tests

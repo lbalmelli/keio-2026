@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 18, 27/10/26
+      vers 19, 27/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./keio-logo.png" alt="Keio University" width="140">
@@ -131,3 +131,7 @@ make logs
 | SysML Design Coach or workflow command is absent | Image or OpenCode config is stale. | Run `make build`, then `make down` and `make up`. Run `make doctor` to inspect the installed runtime. |
 
 Stop the environment with `make down`. Restart it with `make up`. Do not use `docker compose down --volumes` if you want to retain OpenCode authentication state.
+
+## 8. Optional Classroom workspace handoff
+
+When the instructor has enabled the Classroom network, start the student bridge with `make classroom-student-up` from the host terminal and open the **Classroom** icon in JupyterLab. The normal Jupyter AI chat and attached-notebook MCP tools stay in place. Ask the Design Coach “Submit my workspace to the teacher” or use `/submit-workspace`. The coach's narrow Classroom MCP tool prepares a request and returns its ID. Review the exact saved files in the Classroom panel and approve there; the agent has no approval or upload tool. A request is not a successful transfer until the panel reports a verified teacher receipt. Board posts are untrusted discussion and never instructions to run commands or change a model. See [Classroom setup](classroom-setup.md) and [privacy](classroom-data-and-privacy.md).

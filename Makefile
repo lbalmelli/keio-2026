@@ -36,3 +36,10 @@ kernelspec:
 
 shell:
 	docker compose run --rm --no-deps --entrypoint bash jupyter
+
+classroom-student-up:
+	python3 scripts/classroom-init-secret.py
+	docker compose -f compose.yaml -f compose.student.yaml up -d --build
+
+classroom-student-down:
+	docker compose -f compose.yaml -f compose.student.yaml down

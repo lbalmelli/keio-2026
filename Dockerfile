@@ -23,9 +23,14 @@ RUN python -m pip install --no-cache-dir --upgrade pip \
     && python -m jupyter kernelspec list \
     && test -d "$(python -c 'import sysconfig; print(sysconfig.get_path("data"))')/share/jupyter/kernels/sysml"
 
+COPY classroom/__init__.py classroom/common.py classroom/bridge.py classroom/server.py classroom/mcp_student.py /opt/course/classroom/
 COPY opencode /opt/course/opencode
 COPY .opencode /opt/course/.opencode
 RUN touch /opt/course/.opencode/.gitignore
+RUN python -m pip install --no-cache-dir "mcp==1.30.0" "httpx==0.28.1"
+RUN mkdir -p /usr/local/share/jupyter/labextensions/@keio/jupyterlab-classroom
+COPY classroom/jupyterlab/labextension /usr/local/share/jupyter/labextensions/@keio/jupyterlab-classroom
+RUN mkdir -p /usr/local/etc/jupyter/jupyter_server_config.d && printf '{"ServerApp": {"jpserver_extensions": {"classroom.server": true}}}\n' > /usr/local/etc/jupyter/jupyter_server_config.d/classroom.json
 COPY docs/first_model.md /opt/course/docs/first_model.md
 COPY docs/keio-logo.png /opt/course/docs/keio-logo.png
 
@@ -48,7 +53,8 @@ RUN case "$TARGETARCH" in \
     && rm /tmp/opencode.tar.gz \
     && chmod 0755 /usr/local/bin/opencode
 
-ENV HOME=/home/keio \
+ENV PYTHONPATH=/opt/course \
+    HOME=/home/keio \
     XDG_DATA_HOME=/home/keio/state/data \
     XDG_CONFIG_HOME=/home/keio/state/config \
     XDG_CACHE_HOME=/home/keio/state/cache \

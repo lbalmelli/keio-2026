@@ -1,0 +1,32 @@
+services:
+  jupyter:
+    environment:
+      CLASSROOM_MODE: student
+      CLASSROOM_LOCAL_BRIDGE: http://classroom-bridge:8767
+      CLASSROOM_LOCAL_SECRET_FILE: /run/classroom/local-secret
+    volumes:
+      - ./.local/classroom-local-secret:/run/classroom/local-secret:ro
+    depends_on: [classroom-bridge]
+  classroom-bridge:
+    build:
+      context: .
+      dockerfile: classroom/Dockerfile
+      target: runtime
+    command: ["uvicorn", "classroom.bridge:app", "--host", "0.0.0.0", "--port", "8767"]
+    environment:
+      CLASSROOM_MODE: student
+      CLASSROOM_HUB_URL: ${CLASSROOM_HUB_URL:-https://classroom.sysml.dev}
+      CLASSROOM_WORKSPACE: /workspace
+      CLASSROOM_BRIDGE_STATE: /state
+      CLASSROOM_LOCAL_SECRET_FILE: /run/classroom/local-secret
+      CLASSROOM_POLL_INTERVAL_SECONDS: ${CLASSROOM_POLL_INTERVAL_SECONDS:-5}
+      CLASSROOM_MAX_ZIP_MIB: ${CLASSROOM_MAX_ZIP_MIB:-250}
+      CLASSROOM_MAX_UNCOMPRESSED_MIB: ${CLASSROOM_MAX_UNCOMPRESSED_MIB:-500}
+      CLASSROOM_UPLOAD_CHUNK_MIB: ${CLASSROOM_UPLOAD_CHUNK_MIB:-8}
+    volumes:
+      - ./workspace:/workspace:ro
+      - classroom-bridge-state:/state
+      - ./.local/classroom-local-secret:/run/classroom/local-secret:ro
+    restart: unless-stopped
+volumes:
+  classroom-bridge-state:

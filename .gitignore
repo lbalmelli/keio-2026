@@ -76,3 +76,8 @@ __pycache__/
 *.mov
 *.wmv
 
+# Classroom credentials, state, and local build environment
+.local/
+classroom/jupyterlab/node_modules/
+classroom/jupyterlab/lib/
+classroom/jupyterlab/tsconfig.tsbuildinfo
