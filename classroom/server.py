@@ -22,7 +22,7 @@ class ClassroomHandler(APIHandler):
         # This is an explicit map, never a generic bridge proxy.
         parts=path.strip('/').split('/')
         allowed_get={'status','requests','submissions','board/threads'}
-        allowed_post={'enroll','prepare'}
+        allowed_post={'enroll','prepare','profile'}
         if method=='GET' and (path in allowed_get or (len(parts)==3 and parts[0]=='requests' and parts[2]=='preview') or (len(parts)==4 and parts[:2]==['board','threads'] and parts[3]=='messages')):
             pass
         elif method=='POST' and (path in allowed_post or (len(parts)==3 and parts[0]=='requests' and parts[2] in ('approve','decline','preview')) or (len(parts)==4 and parts[:2]==['board','threads'] and parts[3]=='messages')):

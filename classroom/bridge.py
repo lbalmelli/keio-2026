@@ -11,7 +11,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 import httpx
 from fastapi import FastAPI, HTTPException, Header, Request
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from .common import CATEGORIES, canonical_json, category_for_path, digest, inventory, safe_path
 
 ROOT=Path(os.getenv('CLASSROOM_WORKSPACE','/workspace'))
@@ -47,6 +47,7 @@ def manifest_for(categories,selected=None):
     entries=inventory(ROOT,categories,selected,max_total=MAX_RAW)
     return {'files':entries,'manifest_hash':digest(entries),'total_bytes':sum(e['size'] for e in entries),'categories':list(categories),'category_counts':{name:sum(category_for_path(e['path'])==name for e in entries) for name in categories},'excluded_summary':'Chats are private and selected separately. Hidden files, credentials, samples, symlinks and archives are excluded.'}
 class Enroll(BaseModel):code:str;alias:str;label:str
+class Profile(BaseModel):alias:str=Field(default='',max_length=80);label:str=Field(default='',max_length=80)
 class Prepare(BaseModel):categories:list[str]=list(CATEGORIES);message:str=''
 class Decision(BaseModel):manifest_hash:str
 class Selection(BaseModel):selected:list[str]
@@ -59,13 +60,30 @@ def startup():
     if os.getenv('CLASSROOM_MODE','student')=='student':threading.Thread(target=poller,daemon=True).start()
 @app.get('/local/status')
 def status(x_classroom_local:str|None=Header(None)):
-    local_auth(x_classroom_local);s=load();return {k:v for k,v in s.items() if k!='credential'}|{'hub_url':HUB}
+    local_auth(x_classroom_local);s=load();return {k:v for k,v in s.items() if k not in ('credential','claim')}|{'hub_url':HUB}
+@app.post('/local/profile')
+def save_profile(body:Profile,x_classroom_local:str|None=Header(None)):
+    local_auth(x_classroom_local)
+    with lock:
+        s=load();s.update({'alias':body.alias,'label':body.label});save(s)
+    return {'alias':body.alias,'label':body.label}
 @app.post('/local/enroll')
 def enroll(body:Enroll,x_classroom_local:str|None=Header(None)):
     local_auth(x_classroom_local)
     with lock:
-        response=call('POST','/api/v1/devices/enroll',body.model_dump(),token='')
-        s=load();s.update({'device_id':response['device_id'],'claim':response['claim'],'status':'pending'});save(s)
+        try:
+            response=call('POST','/api/v1/devices/enroll',body.model_dump(),token='')
+        except httpx.HTTPStatusError as error:
+            try:
+                detail=error.response.json().get('detail')
+            except (ValueError,AttributeError):
+                detail=None
+            raise HTTPException(error.response.status_code,detail if isinstance(detail,str) else 'Classroom enrollment failed') from error
+        except httpx.TimeoutException as error:
+            raise HTTPException(504,'Classroom gateway timed out') from error
+        except httpx.RequestError as error:
+            raise HTTPException(502,'Classroom gateway unavailable') from error
+        s=load();s.update({'device_id':response['device_id'],'claim':response['claim'],'alias':body.alias,'label':body.label,'status':'pending'});save(s)
     return {'status':'pending'}
 @app.get('/local/requests')
 def requests(x_classroom_local:str|None=Header(None)):

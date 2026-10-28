@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 7, 28/10/26
+      vers 12, 28/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./keio-logo.png" alt="Keio University" width="140">
@@ -34,7 +34,7 @@ docker compose -f compose.teacher.yaml exec -T classroom-hub cat /data/teacher-t
 chmod 600 .local/classroom-teacher-token
 ```
 
-The portal allows creating a classroom, issuing a 15-minute one-time enrollment code, approving the pending device, requesting selected or all workspaces, viewing verified receipts and downloads, and reading the board and audit trail. A newly issued code stays visible through automatic dashboard refreshes; use **Copy code** to copy it, then **Dismiss** when finished. It disappears if the page is reloaded, and an expired code cannot enroll a student. Do not give students the teacher token.
+The portal verifies the teacher token before saving it in this browser profile. It then shows **Teacher token saved on this browser** and hides the entry field. The token remains available after browser or computer restarts while this browser profile and its site data are kept. Use **Forget token on this browser** before handing the computer or browser profile to someone else; this removes the browser copy and returns to the entry field. A rejected saved token also brings back the field. A token previously stored only for the current tab is moved to persistent browser storage after its next successful check. The Hub's separate token file remains in its private Docker volume; the browser setting does not change that file. The portal allows creating a classroom, issuing a 24-hour one-time enrollment code, approving the pending device, requesting selected or all workspaces, viewing verified receipts and downloads, and reading the board and audit trail. A newly issued code stays visible through automatic dashboard refreshes; use **Copy code** to copy it, then **Dismiss** when finished. It disappears if the page is reloaded, and an expired code cannot enroll a student. Do not give students the teacher token.
 
 ## Teacher: authorize the public route
 
@@ -60,7 +60,7 @@ From the student host repository root, run:
 make classroom-student-up
 ```
 
-The command creates an ignored local bridge secret and starts JupyterLab plus the bridge. Open `http://localhost:8888/lab`, click **Classroom**, and enter an alias, device label and teacher-issued one-time code. The default bridge address is `https://classroom.sysml.dev`; the teacher can override it for a local pilot with `CLASSROOM_HUB_URL` before running the Make target. The teacher approves the pending device in the local portal. The bridge then receives a revocable credential in its own Docker volume. Students require no Cloudflare account or VPN software.
+The command creates an ignored local bridge secret and starts JupyterLab plus the bridge. Open `http://localhost:8888/lab`, click **Classroom**, and enter an alias, device label and teacher-issued one-time code. The alias and device label save to the bridge state volume as you type and return after a browser or container restart. The code is consumed once; after the Hub accepts it, the bridge saves the pending claim and later the revocable device credential in the same volume. The panel clears the code and waits for teacher approval without asking for it again. The default bridge address is `https://classroom.sysml.dev`; the teacher can override it for a local pilot with `CLASSROOM_HUB_URL` before running the Make target. Students require no Cloudflare account or VPN software. The panel shows the HTTP status and server message if enrollment fails. An invalid or expired code returns HTTP 400 and needs a new code; HTTP 502 or 504 means the teacher Hub could not be reached or timed out.
 
 The teacher can select a device and press **Request selected** or **Request all**. New requests offer models, reports and saved Jupyter AI chats; the notebook option has been removed. The student sees the request in Classroom, clicks **Review files**, inspects paths and sizes, and selects the saved root-level `.chat` files relevant to the model. Chat files start unchecked. After pressing **Update preview to selected files**, the student chooses **Approve and send** or **Decline**. The same path starts from **Prepare submission** or the Design Coach chat instruction “Submit my workspace to the teacher” / `/submit-workspace`. The agent only prepares a request; the student must approve in Classroom. The bridge does not infer which chats belong to a model or upload unselected chats. A request ID is pending until both views show a verified receipt with SHA-256 and timestamp.
 
@@ -72,7 +72,7 @@ A sleeping teacher laptop or stopped tunnel prevents live exchange. The student 
 
 The Hub SQLite database, staging chunks and received ZIPs live in the `classroom-hub-data` Docker volume. Back up that volume while the Hub is stopped for a consistent SQLite copy. The teacher portal can download receipts; deleting a receipt in the teacher portal removes its ZIP and database row. The teacher should schedule the class retention policy (90 days suggested) and delete any separate backup copy when fulfilling a deletion request.
 
-To stop public exposure and the teacher services, run `make classroom-teacher-down`. To stop the student bridge and JupyterLab, run `make classroom-student-down`. Neither target removes Docker volumes. If the route should be retired, remove the `classroom.sysml.dev` published application and DNS record in Cloudflare after checking it is tunnel-owned; leave root `sysml.dev` untouched.
+To stop public exposure and the teacher services, run `make classroom-teacher-down`. To stop the student bridge and JupyterLab, run `make classroom-student-down`. Neither target removes Docker volumes, so normal rebuilds and container updates preserve enrollment and profile details. Do not run `docker compose down --volumes` on the student project unless you intend to erase the enrollment state and pair again. If the route should be retired, remove the `classroom.sysml.dev` published application and DNS record in Cloudflare after checking it is tunnel-owned; leave root `sysml.dev` untouched.
 
 ## Verification limits
 

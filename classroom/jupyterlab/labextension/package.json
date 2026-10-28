@@ -9,12 +9,13 @@
     "extension": true,
     "outputDir": "labextension",
     "_build": {
-      "load": "static/remoteEntry.38ed3e34496982cf6c01.js",
+      "load": "static/remoteEntry.be07f9b5a1586c334610.js",
       "extension": "./extension"
     }
   },
   "scripts": {
-    "build": "tsc && bash ../../scripts/build-classroom-labextension.sh"
+    "build": "tsc && bash ../../scripts/build-classroom-labextension.sh",
+    "test": "tsc && node --experimental-default-type=module ../../scripts/test-classroom-panel-errors.mjs"
   },
   "dependencies": {
     "@jupyterlab/application": "~4.6.3",
