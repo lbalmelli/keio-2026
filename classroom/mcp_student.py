@@ -20,8 +20,9 @@ def classroom_list_my_workspace_requests()->list:
     return req('GET','requests')
 @mcp.tool()
 def classroom_prepare_workspace_submission(message:str='')->dict:
-    """Prepare a submission preview; student must review and approve in Classroom."""
-    return req('POST','prepare',{'message':message,'categories':['models','notebooks','reports']})
+    """Prepare models, reports and optional saved chats; student selects and approves files."""
+    result=req('POST','prepare',{'message':message,'categories':['models','reports','chats']})
+    return {'request_id':result['request_id'],'status':'awaiting_student_review','next_step':'Select exact files and approve in JupyterLab Classroom.'}
 @mcp.tool()
 def classroom_get_my_submission_status()->list:
     """Read verified submission status."""

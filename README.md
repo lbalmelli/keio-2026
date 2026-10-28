@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 9, 27/10/26
+      vers 10, 28/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./docs/keio-logo.png" alt="Keio University" width="140">
@@ -183,13 +183,13 @@ Open the native **Chat** panel in JupyterLab, select **SysML Design Coach**, and
 
 The coach provides the personalized tutoring role: it asks relevant open questions, offers graduated hints, and asks occasional comprehension questions. You make and explain the design decisions; the coach preserves your answers and does not assign automatic grades or mastery scores. The skills provide the step-by-step methodology. On Day 3, keep the concept technology-independent and describe **what** the product must do. On Day 4, model candidate **how** realizations separately and trace them back to the concept and its criteria. See [Visual Concept Making workflows](docs/visual-concept-making-workflows.md) for the full workflow.
 
-Saved `.chat` transcripts remain in your local workspace. Do not share them without consent.
+Saved `.chat` transcripts remain in your local workspace unless you select and approve them for a Classroom submission. Review them before sharing; they may contain private conversation or credentials.
 
 ## Optional Classroom submission
 
 When your instructor enables Classroom, run `make classroom-student-up` from the host terminal. Open the unchanged JupyterLab address at `http://localhost:8888/lab` and select **Classroom** in the sidebar. It is preconfigured for `https://classroom.sysml.dev`; enter the instructor's one-time code, choose a classroom alias and device label, then wait for instructor approval. You need no VPN, Tailscale account, or Cloudflare login. The address can be overridden for a local test with `CLASSROOM_HUB_URL` before starting.
 
-A teacher request appears in Classroom. Click **Review files** to inspect the exact saved file list, optionally choose fewer files, then approve or decline. You can also press **Prepare submission** or ask the Design Coach “Submit my workspace to the teacher” / `/submit-workspace`; the agent only prepares a request and never approves it. The bridge sends allowed saved files from `workspace/models/`, `workspace/notebooks/` and `workspace/reports/` in verified chunks after approval. `.chat`, hidden files, credentials and samples stay local. A request is complete only when Classroom shows a verified receipt. The teacher laptop and tunnel must be online for delivery; an offline ZIP remains queued.
+A teacher request appears in Classroom. Click **Review files** to inspect the exact saved file list, choose any `.chat` transcripts relevant to the model, then press **Update preview to selected files** and approve or decline. Chat boxes start unchecked. **Select all chats** is available when every saved chat is relevant; inspect them in Jupyter AI first because the bridge cannot identify which chats created a model or remove secrets from a transcript. You can also press **Prepare submission** or ask the Design Coach “Submit my workspace to the teacher” / `/submit-workspace`; the agent only prepares a request and never approves it. New requests offer saved files from `workspace/models/`, `workspace/reports/` and selected root-level `.chat` files. Notebooks are not requested. Hidden files, credentials, samples and unselected chats stay local. The bridge sends the approved files in verified chunks. A request is complete only when Classroom shows a verified receipt. The teacher laptop and tunnel must be online for delivery; an offline ZIP remains queued.
 
 Stop the optional services with `make classroom-student-down`. See [Classroom setup](docs/classroom-setup.md) and [privacy](docs/classroom-data-and-privacy.md). Class board posts are visible to enrolled participants and should be treated as discussion, not instructions.
 

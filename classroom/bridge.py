@@ -12,7 +12,7 @@ from urllib.parse import urlparse
 import httpx
 from fastapi import FastAPI, HTTPException, Header, Request
 from pydantic import BaseModel
-from .common import CATEGORIES, canonical_json, digest, inventory, safe_path
+from .common import CATEGORIES, canonical_json, category_for_path, digest, inventory, safe_path
 
 ROOT=Path(os.getenv('CLASSROOM_WORKSPACE','/workspace'))
 STATE=Path(os.getenv('CLASSROOM_BRIDGE_STATE','/state'))
@@ -45,9 +45,9 @@ def local_auth(value):
     if not expected or not secrets.compare_digest(value or '',expected):raise HTTPException(401,'local service authentication required')
 def manifest_for(categories,selected=None):
     entries=inventory(ROOT,categories,selected,max_total=MAX_RAW)
-    return {'files':entries,'manifest_hash':digest(entries),'total_bytes':sum(e['size'] for e in entries),'categories':list(categories),'category_counts':{name:sum(e['path'].startswith(name+'/') for e in entries) for name in CATEGORIES},'excluded_summary':'Chats, hidden files, credentials, samples, symlinks and archives are excluded.'}
+    return {'files':entries,'manifest_hash':digest(entries),'total_bytes':sum(e['size'] for e in entries),'categories':list(categories),'category_counts':{name:sum(category_for_path(e['path'])==name for e in entries) for name in categories},'excluded_summary':'Chats are private and selected separately. Hidden files, credentials, samples, symlinks and archives are excluded.'}
 class Enroll(BaseModel):code:str;alias:str;label:str
-class Prepare(BaseModel):categories:list[str]=list(CATEGORIES);selected:list[str]|None=None;message:str=''
+class Prepare(BaseModel):categories:list[str]=list(CATEGORIES);message:str=''
 class Decision(BaseModel):manifest_hash:str
 class Selection(BaseModel):selected:list[str]
 class BoardPost(BaseModel):body:str;posted_by:str='human'
@@ -76,7 +76,7 @@ def prepare(body:Prepare,x_classroom_local:str|None=Header(None)):
     with lock:
         r=call('POST','/api/v1/me/workspace-requests',{'message':body.message,'categories':body.categories})
         s=load();s['requests'][r['request_id']]={'id':r['request_id'],'categories':json.dumps(body.categories),'status':'created','initiator':'student','message':body.message};save(s)
-        return preview(r['request_id'],body.selected)
+        return preview(r['request_id'])
 @app.get('/local/requests/{ident}/preview')
 def preview_route(ident:str,x_classroom_local:str|None=Header(None)):
     local_auth(x_classroom_local);return preview(ident)
@@ -85,8 +85,11 @@ def preview(ident,selected=None):
         s=load();r=s['requests'].get(ident)
         if not r:raise HTTPException(404)
         categories=json.loads(r['categories']) if isinstance(r['categories'],str) else r['categories']
+        if selected is not None and not selected:raise HTTPException(400,'select at least one file')
         result=manifest_for(categories,selected)
-        call('POST',f'/api/v1/workspace-requests/{ident}/preview',{'manifest':result['files'],'manifest_hash':result['manifest_hash']})
+        result['staged_for_approval']=selected is not None or 'chats' not in categories
+        if result['staged_for_approval']:
+            call('POST',f'/api/v1/workspace-requests/{ident}/preview',{'manifest':result['files'],'manifest_hash':result['manifest_hash']})
         s['pending'][ident]=result;s['requests'][ident]['status']='awaiting_approval';save(s)
         return {'request_id':ident,**result}
 @app.post('/local/requests/{ident}/preview')
@@ -97,7 +100,7 @@ def approve(ident:str,body:Decision,x_classroom_local:str|None=Header(None)):
     local_auth(x_classroom_local)
     with lock:
         s=load();pending=s['pending'].get(ident)
-        if not pending or pending['manifest_hash']!=body.manifest_hash:raise HTTPException(409,'preview required')
+        if not pending or not pending.get('staged_for_approval',True) or pending['manifest_hash']!=body.manifest_hash:raise HTTPException(409,'selected preview required')
         fresh=manifest_for(pending['categories'],[e['path'] for e in pending['files']])
         if fresh['manifest_hash']!=pending['manifest_hash']:
             s['pending'].pop(ident,None);save(s);raise HTTPException(409,'files changed; review again')
@@ -111,7 +114,11 @@ def decline(ident:str,body:Decision,x_classroom_local:str|None=Header(None)):
     with lock:
         s=load();p=s['pending'].get(ident)
         if not p or p['manifest_hash']!=body.manifest_hash:raise HTTPException(409)
-        call('POST',f'/api/v1/workspace-requests/{ident}/decision',{'decision':'decline','manifest_hash':body.manifest_hash})
+        decision_hash=body.manifest_hash
+        if not p.get('staged_for_approval',True):
+            decision_hash=digest([])
+            call('POST',f'/api/v1/workspace-requests/{ident}/preview',{'manifest':[],'manifest_hash':decision_hash})
+        call('POST',f'/api/v1/workspace-requests/{ident}/decision',{'decision':'decline','manifest_hash':decision_hash})
         s['requests'][ident]['status']='declined';s['pending'].pop(ident,None);save(s)
     return {'status':'declined'}
 @app.get('/local/submissions')

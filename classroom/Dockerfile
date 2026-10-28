@@ -4,6 +4,9 @@ WORKDIR /opt/course
 COPY classroom/requirements.txt /tmp/classroom-requirements.txt
 RUN python -m pip install --no-cache-dir -r /tmp/classroom-requirements.txt
 COPY classroom /opt/course/classroom
+# Docker COPY preserves source modes; some checkouts have tracked files at 0600.
+# Keep application code root-owned and read-only to the unprivileged runtime user.
+RUN chmod -R a+rX /opt/course/classroom
 RUN useradd --create-home --uid 10001 classroom && mkdir /data /state && chown -R classroom:classroom /data /state
 USER classroom
 
