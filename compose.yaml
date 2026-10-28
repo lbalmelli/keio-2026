@@ -26,8 +26,8 @@ services:
     ports:
       - "127.0.0.1:${JUPYTER_PORT:-8888}:8888"
     volumes:
-      - ./workspace:/home/keio/work
-      - ./workspace/samples:/home/keio/work/samples:ro
+      - ${JUPYTER_WORKSPACE:-./workspace}:/home/keio/work
+      - ${JUPYTER_WORKSPACE:-./workspace}/samples:/home/keio/work/samples:ro
       - opencode-state:/home/keio/state
     restart: unless-stopped
 

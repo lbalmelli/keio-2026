@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 10, 28/10/26
+      vers 11, 28/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./docs/keio-logo.png" alt="Keio University" width="140">
@@ -189,6 +189,8 @@ Saved `.chat` transcripts remain in your local workspace unless you select and a
 
 When your instructor enables Classroom, run `make classroom-student-up` from the host terminal. Open the unchanged JupyterLab address at `http://localhost:8888/lab` and select **Classroom** in the sidebar. It is preconfigured for `https://classroom.sysml.dev`; enter the instructor's one-time code, choose a classroom alias and device label, then wait for instructor approval. You need no VPN, Tailscale account, or Cloudflare login. The address can be overridden for a local test with `CLASSROOM_HUB_URL` before starting.
 
+For parallel test instances, start each from a different checkout directory and use a different port. For example, run `JUPYTER_PORT=8890 make classroom-student-up` in `~/keio_2026` and `JUPYTER_PORT=8891 make classroom-student-up` in `~/keio_2026_test`. Compose keeps the containers and named state volumes separate by checkout path and port. Each checkout has its own `workspace/`; when using multiple instances from one checkout, set a different `JUPYTER_WORKSPACE` for each to avoid sharing files. Stop each instance from its original directory with the same `JUPYTER_PORT` using `make classroom-student-down`.
+
 A teacher request appears in Classroom. Click **Review files** to inspect the exact saved file list, choose any `.chat` transcripts relevant to the model, then press **Update preview to selected files** and approve or decline. Chat boxes start unchecked. **Select all chats** is available when every saved chat is relevant; inspect them in Jupyter AI first because the bridge cannot identify which chats created a model or remove secrets from a transcript. You can also press **Prepare submission** or ask the Design Coach “Submit my workspace to the teacher” / `/submit-workspace`; the agent only prepares a request and never approves it. New requests offer saved files from `workspace/models/`, `workspace/reports/` and selected root-level `.chat` files. Notebooks are not requested. Hidden files, credentials, samples and unselected chats stay local. The bridge sends the approved files in verified chunks. A request is complete only when Classroom shows a verified receipt. The teacher laptop and tunnel must be online for delivery; an offline ZIP remains queued.
 
 Stop the optional services with `make classroom-student-down`. See [Classroom setup](docs/classroom-setup.md) and [privacy](docs/classroom-data-and-privacy.md). Class board posts are visible to enrolled participants and should be treated as discussion, not instructions.
@@ -200,6 +202,7 @@ Stop the optional services with `make classroom-student-down`. See [Classroom se
 | Docker daemon is unavailable | Start Docker Engine, WSL2, or Colima, then verify with `docker info`. |
 | `docker compose` is unavailable | Install the Docker Compose v2 plugin and check `docker compose version`. |
 | Port `8888` is already in use | Set `JUPYTER_PORT=8889`, run `make up`, and open `http://localhost:8889/lab`. |
+| Starting a second Classroom notebook stops the first | Compose commands reused one project name. | Start each instance from a different checkout directory and use a distinct `JUPYTER_PORT`; stop it with the same settings. |
 | Classroom shows Offline | The teacher laptop, tunnel, or bridge is unavailable. Keep working locally and wait for a verified receipt after it reconnects. |
 | Classroom pairing stays Pending | The instructor must approve your device in the teacher portal. |
 | OpenCode is missing from the chat agent list | Run `make build`, then restart with `make down` and `make up`. |
