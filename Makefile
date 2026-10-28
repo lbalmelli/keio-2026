@@ -40,6 +40,7 @@ shell:
 CLASSROOM_COMPOSE_PROJECT ?= $(if $(COMPOSE_PROJECT_NAME),$(COMPOSE_PROJECT_NAME),$(shell python3 scripts/classroom-compose-project.py --directory "$(CURDIR)" --port "$(if $(JUPYTER_PORT),$(JUPYTER_PORT),8888)"))
 
 classroom-student-up:
+	python3 scripts/classroom-prepare-workspace.py
 	python3 scripts/classroom-init-secret.py
 	COMPOSE_PROJECT_NAME=$(CLASSROOM_COMPOSE_PROJECT) docker compose -f compose.yaml -f compose.student.yaml up -d --build
 

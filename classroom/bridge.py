@@ -37,9 +37,24 @@ def call(method,path,body=None,token=None,raw=None,extra=None):
     s=load();token=s.get('credential') if token is None else token
     headers={'Authorization':'Bearer '+token} if token else {}
     headers.update(extra or {})
-    with httpx.Client(timeout=120) as client:
-        r=client.request(method,HUB+path,headers=headers,json=body if raw is None else None,content=raw)
-        r.raise_for_status();return r.json()
+    try:
+        with httpx.Client(timeout=120) as client:
+            r=client.request(method,HUB+path,headers=headers,json=body if raw is None else None,content=raw)
+    except httpx.RequestError as error:
+        raise HTTPException(503,'Classroom connection is down') from error
+    if r.status_code>=500:
+        raise HTTPException(503,'Classroom connection is down')
+    if r.status_code>=400:
+        try:
+            payload=r.json()
+            detail=payload.get('detail') if isinstance(payload,dict) else None
+        except ValueError:
+            detail=None
+        raise HTTPException(r.status_code,detail if isinstance(detail,str) else 'Classroom request failed')
+    try:
+        return r.json()
+    except ValueError as error:
+        raise HTTPException(502,'Classroom gateway returned an invalid response') from error
 def local_auth(value):
     expected=Path(os.getenv('CLASSROOM_LOCAL_SECRET_FILE','/run/classroom/local-secret')).read_text().strip()
     if not expected or not secrets.compare_digest(value or '',expected):raise HTTPException(401,'local service authentication required')
@@ -80,9 +95,9 @@ def enroll(body:Enroll,x_classroom_local:str|None=Header(None)):
                 detail=None
             raise HTTPException(error.response.status_code,detail if isinstance(detail,str) else 'Classroom enrollment failed') from error
         except httpx.TimeoutException as error:
-            raise HTTPException(504,'Classroom gateway timed out') from error
+            raise HTTPException(503,'Classroom connection is down') from error
         except httpx.RequestError as error:
-            raise HTTPException(502,'Classroom gateway unavailable') from error
+            raise HTTPException(503,'Classroom connection is down') from error
         s=load();s.update({'device_id':response['device_id'],'claim':response['claim'],'alias':body.alias,'label':body.label,'status':'pending'});save(s)
     return {'status':'pending'}
 @app.get('/local/requests')
@@ -193,8 +208,8 @@ def transfer(ident):
             receipt=call('POST',f'/api/v1/submissions/{sid}/finalize')
             if receipt['sha256']!=h.hexdigest():raise ValueError('receipt checksum mismatch')
             archive.unlink(missing_ok=True);s['requests'][ident]['status']='received';s['requests'][ident]['receipt']=receipt;s['pending'].pop(ident,None);save(s)
-        except (httpx.HTTPError,ValueError,KeyError) as error:
-            s['requests'][ident]['status']='offline' if isinstance(error,httpx.HTTPError) else 'review_again'
+        except (httpx.HTTPError,HTTPException,ValueError,KeyError) as error:
+            s['requests'][ident]['status']='offline' if isinstance(error,(httpx.HTTPError,HTTPException)) else 'review_again'
             s['requests'][ident]['error']=str(error)[:200];save(s)
 
 def poller():
@@ -218,10 +233,10 @@ def poller():
                     s['online']=True;s['last_sync']=time.time();save(s)
                     for ident,row in list(s['requests'].items()):
                         if row.get('status') in ('approved','uploading','offline'):transfer(ident)
-        except (httpx.HTTPError,KeyError,ValueError) as error:
+        except (httpx.HTTPError,HTTPException,KeyError,ValueError) as error:
             with lock:
                 s=load();s['online']=False
-                if isinstance(error,httpx.HTTPStatusError) and error.response.status_code==401:
+                if (isinstance(error,httpx.HTTPStatusError) and error.response.status_code==401) or (isinstance(error,HTTPException) and error.status_code==401):
                     s['status']='revoked';s.pop('credential',None)
                 save(s)
         time.sleep(INTERVAL)

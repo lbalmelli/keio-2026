@@ -3,7 +3,7 @@
     <td align="left" valign="middle">
       <strong>Agentic Product Concept Modeling 2026</strong><br>
       Laurent Balmelli, Hidekazu Nishimura<br>
-      vers 11, 28/10/26
+      vers 12, 28/10/26
     </td>
     <td align="right" valign="middle">
       <img src="./docs/keio-logo.png" alt="Keio University" width="140">
@@ -189,7 +189,7 @@ Saved `.chat` transcripts remain in your local workspace unless you select and a
 
 When your instructor enables Classroom, run `make classroom-student-up` from the host terminal. Open the unchanged JupyterLab address at `http://localhost:8888/lab` and select **Classroom** in the sidebar. It is preconfigured for `https://classroom.sysml.dev`; enter the instructor's one-time code, choose a classroom alias and device label, then wait for instructor approval. You need no VPN, Tailscale account, or Cloudflare login. The address can be overridden for a local test with `CLASSROOM_HUB_URL` before starting.
 
-For parallel test instances, start each from a different checkout directory and use a different port. For example, run `JUPYTER_PORT=8890 make classroom-student-up` in `~/keio_2026` and `JUPYTER_PORT=8891 make classroom-student-up` in `~/keio_2026_test`. Compose keeps the containers and named state volumes separate by checkout path and port. Each checkout has its own `workspace/`; when using multiple instances from one checkout, set a different `JUPYTER_WORKSPACE` for each to avoid sharing files. Stop each instance from its original directory with the same `JUPYTER_PORT` using `make classroom-student-down`.
+For parallel test instances, start each from a different checkout directory and use a different port. For example, run `JUPYTER_PORT=8890 make classroom-student-up` in `~/keio_2026` and `JUPYTER_PORT=8891 make classroom-student-up` in `~/keio_2026_test`. Compose keeps the containers and named state volumes separate by checkout path and port. Each checkout has its own `workspace/`; startup creates its standard `models/`, `notebooks/`, `samples/` and `reports/` folders if missing, without deleting files. When using multiple instances from one checkout, set a different `JUPYTER_WORKSPACE` for each to avoid sharing files. Stop each instance from its original directory with the same `JUPYTER_PORT` using `make classroom-student-down`.
 
 A teacher request appears in Classroom. Click **Review files** to inspect the exact saved file list, choose any `.chat` transcripts relevant to the model, then press **Update preview to selected files** and approve or decline. Chat boxes start unchecked. **Select all chats** is available when every saved chat is relevant; inspect them in Jupyter AI first because the bridge cannot identify which chats created a model or remove secrets from a transcript. You can also press **Prepare submission** or ask the Design Coach “Submit my workspace to the teacher” / `/submit-workspace`; the agent only prepares a request and never approves it. New requests offer saved files from `workspace/models/`, `workspace/reports/` and selected root-level `.chat` files. Notebooks are not requested. Hidden files, credentials, samples and unselected chats stay local. The bridge sends the approved files in verified chunks. A request is complete only when Classroom shows a verified receipt. The teacher laptop and tunnel must be online for delivery; an offline ZIP remains queued.
 
